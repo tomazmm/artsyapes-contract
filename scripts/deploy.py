@@ -1,9 +1,8 @@
 import base64
 from terra_sdk.client.localterra import LocalTerra
+from terra_sdk.core import Coins
 from terra_sdk.core.wasm import MsgStoreCode, MsgInstantiateContract, MsgExecuteContract
 from terra_sdk.core.auth.data.tx import StdFee
-import pprint as pp
-from IPython.lib.pretty import pprint
 
 
 lt = LocalTerra()
@@ -27,11 +26,12 @@ def instantiate(code_id: int):
         "symbol": "APE",
         "minter": str(test1.key.acc_address)
       },
-      {"uluna": 10000000, "ukrw": 1000000},
+      Coins({"uluna": 10000000}),
     )
     instantiate_tx = test1.create_and_sign_tx(msgs=[instantiate])
     instantiate_tx_result = lt.tx.broadcast(instantiate_tx)
-    print(instantiate_tx_result)
+    contract_addresss = instantiate_tx_result.logs[0].events_by_type['instantiate_contract']['contract_address'][0]
+    print(f"Contract address: {contract_addresss}")
 
 
 if __name__ == '__main__':
