@@ -1,4 +1,6 @@
 import base64
+import json
+
 from terra_sdk.client.localterra import LocalTerra
 from terra_sdk.core import Coins
 from terra_sdk.core.wasm import MsgStoreCode, MsgInstantiateContract
@@ -33,12 +35,16 @@ def instantiate(code_id: int) -> str:
     return instantiate_tx_result.logs[0].events_by_type['instantiate_contract']['contract_address'][0]
 
 
-def deploy():
+def main():
     code_id = store()
     contract_address = instantiate(code_id)
-    print(f"Code ID : {code_id}\nContract address: {contract_address}")
-    return code_id, contract_address
+
+    with open("contract.json", "w") as f:
+        json.dump({
+           "code_id": code_id,
+           "contract_address": contract_address
+        }, f, indent=4)
 
 
 if __name__ == '__main__':
-    deploy()
+    main()
